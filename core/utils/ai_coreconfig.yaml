@@ -1,0 +1,3 @@
+model: gpt-4o-mini
+system_instruction: "You are Zenia, a helpful virtual human assistant."
+max_history: 20

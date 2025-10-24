@@ -1,0 +1,135 @@
+# ==========================
+# CORE - SYSTEM & UTILITIES
+# ==========================
+openai
+requests
+python-dotenv
+tqdm
+psutil
+pyyaml
+sqlite-utils
+pandas
+numpy
+jsonschema
+typing-extensions
+
+# ==========================
+# NLP / REASONING / AI ENGINE
+# ==========================
+spacy
+nltk
+transformers
+torch
+sentence-transformers
+scikit-learn
+textblob
+langdetect
+
+# ==========================
+# MEMORY & KNOWLEDGE MODELS
+# ==========================
+faiss-cpu
+networkx
+graphviz
+sqlalchemy
+peewee
+
+# ==========================
+# SPEECH & VOICE (TTS / STT)
+# ==========================
+sounddevice
+pyaudio
+wave
+openwakeword
+playsound
+edge-tts
+TTS
+whisper
+librosa
+
+# ==========================
+# COMPUTER VISION & PERCEPTION
+# ==========================
+opencv-python
+mediapipe
+Pillow
+face-recognition
+ultralytics   # (YOLO models)
+
+# ==========================
+# GUI & VISUAL INTERFACE
+# ==========================
+pygame
+tkinter
+PyQt5
+
+# ==========================
+# AUTOMATION / SYSTEM CONTROL
+# ==========================
+pyautogui
+keyboard
+mouse
+pygetwindow
+pyperclip
+pywinauto
+
+# ==========================
+# WEB & NETWORK ACCESS
+# ==========================
+beautifulsoup4
+lxml
+requests-html
+selenium
+aiohttp
+
+# ==========================
+# LEARNING & ADAPTATION
+# ==========================
+torchvision
+matplotlib
+seaborn
+datasets
+huggingface-hub
+
+# ==========================
+# LOGGING / DEBUGGING / DEV TOOLS
+# ==========================
+colorama
+rich
+loguru
+debugpy
+
+# ==========================
+# FUTURE - ROBOTICS / 3D / AVATAR
+# ==========================
+pybullet
+mediapipe-silhouette
+blenderproc
+opencv-contrib-python
+
+# ==========================
+# EXTRA UTILITIES (OPTIONAL BUT USEFUL)
+# ==========================
+textdistance
+rapidfuzz
+dateparser
+python-dateutil
+schedule
+__future__
+ast
+cv2
+difflib
+dotenv
+gtts
+pkg_resources
+pyttsx3
+reasoner
+soundfile
+speech_recognition
+sqlite3
+start_zenia
+ultralytics
+webbrowser
+winsound
+yaml
+zipfile

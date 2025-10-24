@@ -1,0 +1,2 @@
+class DialogueContext:
+    pass

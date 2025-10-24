@@ -1,0 +1,52 @@
+{
+  "time": {
+    "examples": [
+      "τι ώρα είναι"
+    ],
+    "success": 0,
+    "fails": 0
+  },
+  "date": {
+    "examples": [
+      "ημερομηνία έχουμε"
+    ],
+    "success": 0,
+    "fails": 0
+  },
+  "open_app": {
+    "examples": [
+      "άνοιξε το youtube",
+      "άνοιξε world part",
+      "άνοιξε την καρτέλα gpt chat"
+    ],
+    "success": 0,
+    "fails": 0
+  },
+  "music": {
+    "examples": [
+      "βάλε το τραγούδι ονειρεύομαι του καρρά",
+      "άνοιξε το youtube και βάλε το ονειρεύομαι του κάρα να παίζει",
+      "κλείσε το youtube"
+    ],
+    "success": 0,
+    "fails": 0
+  },
+  "close_app": {
+    "examples": [
+      "κλείσε τον υπολογιστ"
+    ],
+    "success": 0,
+    "fails": 0
+  },
+  "unknown": {
+    "examples": [
+      "κάνε shutdown το σύστημα όλο",
+      "google chrome",
+      "πως σε λένε",
+      "θυμάσαι ότι το όνομά σου είναι ζένια",
+      "έτσι κι έτσι"
+    ],
+    "success": 0,
+    "fails": 0
+  }
+}

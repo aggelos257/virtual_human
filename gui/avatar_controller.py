@@ -1,0 +1,2 @@
+class AvatarController:
+    pass

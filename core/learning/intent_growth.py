@@ -1,0 +1,2 @@
+class IntentGrowth:
+    pass
