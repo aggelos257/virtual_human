@@ -4,13 +4,9 @@ import time
 class GUIManager:
     """
     GUI Manager της Ζένιας — διαχειρίζεται οπτικές και διεπαφικές λειτουργίες.
-    Υποστηρίζει reasoning_manager, audio_manager, emotion_engine, persona_profile, tts και listener.
     """
 
     def __init__(self, audio_manager=None, reasoning_manager=None, emotion_engine=None, persona_profile=None, tts=None, listener=None):
-        """
-        Αρχικοποιεί το GUI subsystem.
-        """
         self.audio_manager = audio_manager
         self.reasoning_manager = reasoning_manager
         self.emotion_engine = emotion_engine
@@ -20,58 +16,49 @@ class GUIManager:
         self._is_running = False
         self._gui_thread = None
 
+    def start_voice_interface(self, tts, stt, reasoning_manager):
+        """
+        Εκκινεί το GUI Voice Interface με TTS/STT/Reasoning.
+        """
+        self.tts = tts
+        self.listener = stt
+        self.reasoning_manager = reasoning_manager
+        self.start()
+        print("🖼️ [GUIManager] Voice interface ενεργοποιήθηκε.")
+
+    def stop_voice_interface(self):
+        """
+        Σταματά το GUI Voice Interface.
+        """
+        self.stop()
+        print("🛑 [GUIManager] Voice interface απενεργοποιήθηκε.")
+
     def start(self):
         """
-        Εκκινεί το GUI Manager σε ξεχωριστό thread για να μην μπλοκάρει τα υπόλοιπα υποσυστήματα.
+        Εκκινεί το GUI σε ξεχωριστό thread.
         """
         if not self._is_running:
             self._is_running = True
             self._gui_thread = threading.Thread(target=self._run, daemon=True)
             self._gui_thread.start()
-            print("🖼️ [GUIManager] Το GUI ξεκίνησε επιτυχώς.")
+            print("🖼️ [GUIManager] Το GUI ξεκίνησε.")
 
     def _run(self):
         """
-        Βασικός βρόχος λειτουργίας του GUI.
-        Εδώ μπορεί να υλοποιηθεί η οπτικοποίηση reasoning, συναισθημάτων, TTS και Listener.
+        Κυρίως βρόχος λειτουργίας GUI.
         """
         while self._is_running:
-            if self.reasoning_manager is not None:
-                # Reasoning visualization
-                pass
-
-            if self.emotion_engine is not None:
-                # Visualization συναισθημάτων
-                pass
-
-            if self.tts is not None:
-                # Ενέργειες κατά την εκφώνηση
-                pass
-
-            if self.listener is not None:
-                # Ενέργειες κατά την ακρόαση μικροφώνου
-                pass
-
+            # εδώ μπορεί να προστεθεί animation, visualization TTS/STT
             time.sleep(0.05)
 
     def stop(self):
         """
-        Διακόπτει τη λειτουργία του GUI Manager.
+        Διακόπτει τη λειτουργία του GUI.
         """
         self._is_running = False
         if self._gui_thread and self._gui_thread.is_alive():
             self._gui_thread.join(timeout=1.0)
-        print("🛑 [GUIManager] Το GUI σταμάτησε.")
-
-    def update_persona(self, new_persona):
-        """
-        Ενημέρωση του persona_profile δυναμικά.
-        """
-        self.persona_profile = new_persona
-        print("👤 [GUIManager] Persona profile ενημερώθηκε.")
+        print("🖼️ [GUIManager] Το GUI σταμάτησε.")
 
     def is_running(self):
-        """
-        Επιστρέφει True αν το GUI εκτελείται.
-        """
         return self._is_running

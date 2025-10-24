@@ -1,6 +1,16 @@
+# -*- coding: utf-8 -*-
+"""
+core/reasoning/reasoning_manager.py
+-----------------------------------
+Διαχειριστής Λογικής της Ζένια.
+Συντονίζει: Reasoner, Memory, Learning, Emotion, Actions, WorldModel.
+Είναι πλήρως συμβατός με το start_zenia.py που περνάει device.
+"""
+
 import re
 import webbrowser
 import datetime
+import threading
 
 from core.action.action_executor import ActionExecutor
 from core.memory.memory_manager import MemoryManager
@@ -11,17 +21,11 @@ from .reasoner import Reasoner
 
 
 class ReasoningManager:
-    """
-    Διαχειριστής Λογικής της Ζένια.
-    Συντονίζει: Reasoner, Memory, Learning, Emotion, Actions, WorldModel.
-    Είναι πλήρως συμβατός με το start_zenia.py που περνάει device.
-    """
-
     def __init__(self, device=None):
         self.device = device
         print(f"🧠 [ReasoningManager] Ενεργοποιήθηκε με συσκευή: {self.device.type if self.device else 'cpu'}")
 
-        # Υποσυστήματα (όλα υπάρχουν στο project dump σου)
+        # Υποσυστήματα
         self.reasoner = Reasoner(device=self.device)
         self.memory = MemoryManager()
         self.learner = AdaptiveLearner()
@@ -29,7 +33,42 @@ class ReasoningManager:
         self.executor = ActionExecutor()
         self.world_model = WorldModel()
 
+        # Κατάσταση λειτουργίας
+        self._is_running = False
+        self._loop_thread = None
+
         print("✅ [ReasoningManager] Υποσυστήματα φόρτωσαν επιτυχώς.")
+
+    # ------------------------------------------------------------
+    # 🧠 Εκκίνηση reasoning loop (ώστε να είναι συμβατό με start_zenia.py)
+    # ------------------------------------------------------------
+    def start(self):
+        """Εκκινεί το reasoning loop (προαιρετικά background λογική)."""
+        if not self._is_running:
+            self._is_running = True
+            self._loop_thread = threading.Thread(target=self._loop, daemon=True)
+            self._loop_thread.start()
+            print("🧠 [ReasoningManager] Το reasoning ξεκίνησε.")
+
+    def _loop(self):
+        """Background loop αν χρειαστεί μελλοντική συνεχή λογική."""
+        while self._is_running:
+            # Εδώ μπορεί να μπει μελλοντικά monitoring, world updates κ.λπ.
+            # Προς το παρόν δεν κάνει κάτι.
+            import time
+            time.sleep(0.1)
+
+    # ------------------------------------------------------------
+    # 🛑 Τερματισμός reasoning
+    # ------------------------------------------------------------
+    def shutdown(self):
+        self._is_running = False
+        if self._loop_thread and self._loop_thread.is_alive():
+            self._loop_thread.join(timeout=1.0)
+        print("🧠 [ReasoningManager] Το reasoning τερματίστηκε.")
+
+    def is_running(self):
+        return self._is_running
 
     # ------------------------------------------------------------
     # 🔍 Κύρια διεπαφή επεξεργασίας
@@ -42,27 +81,23 @@ class ReasoningManager:
         intent = self.reasoner.predict_intent(text)
         analysis = self.reasoner.analyze(text)
 
-        # 2) Συναίσθημα (υφιστάμενο API: process_input -> (prefix, emotion, intensity))
+        # 2) Συναίσθημα
         prefix, emotion, intensity = self.emotion_engine.process_input(text)
 
-        # 3) Ενέργειες (δράσεις) βάσει intent
+        # 3) Ενέργειες
         action_result = self._handle_action(text, intent)
         if action_result:
-            # 4) Καταγραφή στη μνήμη (υφιστάμενο API: store_event)
             self.memory.store_event(
                 event_type="action_result",
                 content=f"{text} -> {action_result}",
                 emotion=emotion,
                 importance=0.7
             )
-            # 5) World state ενημέρωση (υφιστάμενο API: set_state)
             self.world_model.set_state("last_action", action_result)
             return f"{prefix}{action_result}"
 
-        # 4) Μάθηση (υφιστάμενο API: learn_from ή παρόμοιο – σε dump υπάρχει learn_from;)
-        # Σε αρκετές εκδόσεις υπάρχει learn_from· αν όχι, δεν θα σκάσει το σύστημα αν καλέσουμε απλή μέθοδο learn().
+        # 4) Μάθηση
         try:
-            # Προτιμάμε learn_from(text) αν υπάρχει:
             if hasattr(self.learner, "learn_from"):
                 self.learner.learn_from(text)
             else:
@@ -106,7 +141,6 @@ class ReasoningManager:
 
         # Εφαρμογές
         if intent == "open_app":
-            # επιχειρούμε να αφαιρέσουμε λέξεις-σύνδεσμους
             name = re.sub(r"(άνοιξε|open|το|την|τον|app|πρόγραμμα)", "", t).strip()
             return self.executor.open_app(name)
 
@@ -116,7 +150,6 @@ class ReasoningManager:
 
         # Μουσική
         if intent == "play_music":
-            # αφαιρούμε triggers για καθαρό query
             query = re.sub(r"(παίξε|βάλε|μουσική|τραγούδι|στο|youtube)", "", t).strip()
             return self.executor.play_music(query)
 
@@ -126,5 +159,4 @@ class ReasoningManager:
         if intent == "query_date":
             return f"📅 Η ημερομηνία είναι {datetime.datetime.now().strftime('%d/%m/%Y')}."
 
-        # Καμία αναγνωρίσιμη ενέργεια
         return None
