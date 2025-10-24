@@ -4,10 +4,10 @@ import time
 class GUIManager:
     """
     GUI Manager της Ζένιας — διαχειρίζεται οπτικές και διεπαφικές λειτουργίες.
-    Υποστηρίζει reasoning_manager, audio_manager, emotion_engine και persona_profile.
+    Υποστηρίζει reasoning_manager, audio_manager, emotion_engine, persona_profile και tts.
     """
 
-    def __init__(self, audio_manager=None, reasoning_manager=None, emotion_engine=None, persona_profile=None):
+    def __init__(self, audio_manager=None, reasoning_manager=None, emotion_engine=None, persona_profile=None, tts=None):
         """
         Αρχικοποιεί το GUI subsystem.
         """
@@ -15,6 +15,7 @@ class GUIManager:
         self.reasoning_manager = reasoning_manager
         self.emotion_engine = emotion_engine
         self.persona_profile = persona_profile
+        self.tts = tts
         self._is_running = False
         self._gui_thread = None
 
@@ -31,19 +32,22 @@ class GUIManager:
     def _run(self):
         """
         Βασικός βρόχος λειτουργίας του GUI.
-        Εδώ μπορεί να υλοποιηθεί η οπτικοποίηση συναισθημάτων, reasoning feedback κ.λπ.
+        Εδώ μπορεί να υλοποιηθεί η οπτικοποίηση reasoning, συναισθημάτων και TTS.
         """
         while self._is_running:
-            # Αν υπάρχουν δεδομένα reasoning, μπορούμε να τα εμφανίσουμε ή να τα χρησιμοποιήσουμε
             if self.reasoning_manager is not None:
-                # Ενδεικτικά: μπορούμε να διαβάζουμε ενεργή κατάσταση reasoning
+                # Μελλοντική χρήση: Reasoning feedback visualization
                 pass
 
             if self.emotion_engine is not None:
-                # Π.χ. ενημέρωση avatar με βάση το συναίσθημα
+                # Μελλοντική χρήση: εμφάνιση συναισθημάτων avatar
                 pass
 
-            time.sleep(0.05)  # Μικρό delay για αποφυγή υπερφόρτωσης CPU
+            if self.tts is not None:
+                # Μελλοντική χρήση: visualization κατά την εκφώνηση
+                pass
+
+            time.sleep(0.05)
 
     def stop(self):
         """
