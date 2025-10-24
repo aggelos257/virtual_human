@@ -68,6 +68,13 @@ class SystemManager:
         print("🧠 [SystemManager] Εκκίνηση...")
 
     # ------------------------------------------------------
+    # Δημόσια μέθοδος για εκκίνηση (συμβατή με start_zenia.py)
+    # ------------------------------------------------------
+    def start(self):
+        """Συμβατή συντόμευση που καλεί το start_all()."""
+        self.start_all()
+
+    # ------------------------------------------------------
     # Εκκίνηση όλων των υποσυστημάτων
     # ------------------------------------------------------
     def start_all(self):
@@ -83,7 +90,6 @@ class SystemManager:
                 print("🔊 [SystemManager] Εκκινείται το TTS...")
                 self.tts = TextToSpeech()
 
-                # Έλεγχος Internet για αυτόματη επιλογή λειτουργίας
                 if internet_available():
                     print("🌐 [SystemManager] Internet διαθέσιμο — Online TTS ενεργό.")
                     self.tts.online_enabled = True
@@ -172,7 +178,7 @@ class SystemManager:
 # === Αυτόνομη εκτέλεση (αν τρέξει μόνο του) ===
 if __name__ == "__main__":
     system = SystemManager()
-    system.start_all()
+    system.start()
     try:
         while True:
             time.sleep(1)
