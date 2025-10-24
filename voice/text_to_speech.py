@@ -175,6 +175,7 @@ class TextToSpeech:
             return None
 
     def _edge_tts_to_mp3(self, text: str) -> Optional[str]:
+        """Διορθωμένη μέθοδος για Edge TTS χωρίς stream_to_file (χρήση stream)."""
         voice = self._edge_tts_voice()
         if not voice:
             return None
@@ -182,7 +183,10 @@ class TextToSpeech:
 
         async def _run():
             communicate = edge_tts.Communicate(text, voice)
-            await communicate.stream_to_file(out_path)
+            with open(out_path, "wb") as f:
+                async for chunk in communicate.stream():
+                    if chunk["type"] == "audio":
+                        f.write(chunk["data"])
 
         try:
             asyncio.run(_run())

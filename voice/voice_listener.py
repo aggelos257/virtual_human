@@ -2,8 +2,9 @@
 """
 voice_listener.py
 -----------------
-Συνεχής ακρόαση, αναγνώριση φωνητικών εντολών για αλλαγή γλώσσας/φύλου,
+Συνεχής ακρόαση φωνής, αναγνώριση εντολών αλλαγής φωνής
 και προώθηση υπολοίπων αιτημάτων στο ReasoningManager.
+Υποστηρίζει ελληνικά και αγγλικά.
 """
 
 import re
@@ -23,35 +24,52 @@ class VoiceListener:
     def __init__(self, reasoning_manager=None):
         self.reasoning_manager = reasoning_manager
         self.running = False
-
         self.tts = TextToSpeech()
 
         self.recognizer = sr.Recognizer() if sr else None
-        self.microphone = sr.Microphone() if sr else None
+        self.microphone = None
+        if sr:
+            try:
+                self.microphone = sr.Microphone()
+            except Exception as e:
+                print(f"⚠️ [VoiceListener] Δεν βρέθηκε μικρόφωνο: {e}")
+                self.microphone = None
 
-        # Εντολές τύπου: "μίλα ελληνικά γυναίκα", "μίλα αγγλικά άντρας"
+        # Ανίχνευση εντολών τύπου: "μίλα ελληνικά γυναίκα"
         self.voice_cmd_pattern = re.compile(
             r"(?:μίλα|μιλα)\s+(ελληνικά|αγγλικά)\s+(γυναίκα|άντρας)",
             re.IGNORECASE
         )
 
+    # -------------------------------------------------------
+    # Δημόσιες μέθοδοι
+    # -------------------------------------------------------
     def start(self):
+        """Ξεκινά τη φωνητική ακρόαση σε ξεχωριστό thread."""
         if self.running:
             return
+        if not self.recognizer or not self.microphone:
+            print("⚠️ [VoiceListener] Δεν υπάρχει διαθέσιμο μικρόφωνο ή SpeechRecognition.")
+            return
+
         self.running = True
         threading.Thread(target=self._listen_loop, daemon=True).start()
         print("🎧 [VoiceListener] Ξεκίνησε η φωνητική ακρόαση...")
 
     def stop(self):
+        """Σταματά την ακρόαση."""
         self.running = False
 
+    # -------------------------------------------------------
+    # Κύριος βρόχος ακρόασης
+    # -------------------------------------------------------
     def _listen_loop(self):
-        if not self.recognizer or not self.microphone:
-            print("⚠️ [VoiceListener] Δεν βρέθηκε μικρόφωνο ή SpeechRecognition.")
+        try:
+            with self.microphone as source:
+                self.recognizer.adjust_for_ambient_noise(source, duration=0.8)
+        except Exception as e:
+            print(f"⚠️ [VoiceListener] Σφάλμα μικροφώνου: {e}")
             return
-
-        with self.microphone as source:
-            self.recognizer.adjust_for_ambient_noise(source)
 
         while self.running:
             try:
@@ -59,19 +77,20 @@ class VoiceListener:
                     print("🎤 [VoiceListener] Ακούω...")
                     audio = self.recognizer.listen(source, phrase_time_limit=6)
 
-                # Αναγνώριση στα ελληνικά (μπορείς να αλλάξεις σε en-US αν μιλάς αγγλικά)
-                text = self.recognizer.recognize_google(audio, language="el-GR").lower().strip()
+                # Ελληνικά ως default
+                text = self.recognizer.recognize_google(audio, language="el-GR")
+                text = text.lower().strip() if text else ""
                 if not text:
                     continue
+
                 print(f"🗣️ [VoiceListener] Άκουσα: {text}")
 
-                # Εντολή αλλαγής φωνής;
+                # Ελέγχουμε αν είναι εντολή αλλαγής φωνής
                 if self._check_voice_command(text):
                     continue
 
-                # Αλλιώς, προώθηση στο Reasoning
+                # Προώθηση στο Reasoning
                 if self.reasoning_manager:
-                    # αν έχεις μέθοδο handle_voice_input, διαφορετικά process
                     if hasattr(self.reasoning_manager, "handle_voice_input"):
                         self.reasoning_manager.handle_voice_input(text)
                     else:
@@ -80,12 +99,19 @@ class VoiceListener:
                             self.tts.speak(reply)
 
             except sr.UnknownValueError:
+                # Δεν καταλάβαμε την ομιλία — απλώς συνεχίζουμε
                 pass
+            except sr.RequestError as e:
+                print(f"⚠️ [VoiceListener] Σφάλμα υπηρεσίας αναγνώρισης: {e}")
+                time.sleep(2)
             except Exception as e:
                 print(f"⚠️ [VoiceListener] Σφάλμα: {e}")
                 traceback.print_exc()
                 time.sleep(1)
 
+    # -------------------------------------------------------
+    # Εντολές αλλαγής φωνής
+    # -------------------------------------------------------
     def _check_voice_command(self, text: str) -> bool:
         m = self.voice_cmd_pattern.search(text)
         if not m:
